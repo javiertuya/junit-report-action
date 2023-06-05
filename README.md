@@ -1,6 +1,6 @@
 # Junit report action 
 
-TODO.
+Generates junit html style reports from surefire test results
 
 ## Inputs
 
@@ -9,14 +9,15 @@ Specification of surefire files (can use * and  ** wildcards).
 Default: `**/target/surefire-reports/TEST-*.xml`
 
 ## `report-dir`
-Directory where the reports will be generated.
+Directory where the junit html reports will be generated.
 Default: `target/site`
 
 ## Example usage
 
 ```
-uses: javiertuya/junit-report-action@main
-with:
-  project-dir: 'src/main/java'
-  sharpen-args: '@sharpen-all-options.txt'
+      - name: Junit html report
+        uses: javiertuya/junit-report-action@main
+        with:
+          surefire-files: "**/target/surefire-reports/TEST-*.xml"
+          report-dir: target/site/junit
 ```
