@@ -1,0 +1,30 @@
+# action.yml
+name: 'Junit reports action'
+description: 'runs mono sharpen java to C## converter in a java 7 container'
+inputs:
+  surefire-files:
+    description: 'Specification of surefire files (can use * and  ** wildcards)'
+    required: false
+    default: '**/target/surefire-reports/TEST-*.xml'
+  report-dir:
+    description: 'Directory where the reports will be generated'
+    required: false
+    default: 'target/site'
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        echo "<project name=\"aggregate-junit-reports\" default=\"aggregate\" >"        > junit-reports-ant.xml
+        echo "<target name=\"aggregate\" >"                                             >> junit-reports-ant.xml
+        echo "<junitreport>"                                                            >> junit-reports-ant.xml
+        echo "<fileset dir=\".\"><include name=\"**/target/surefire-reports/TEST-*.xml\" /></fileset>"      >> junit-reports-ant.xml
+        echo "<report format=\"frames\" todir=\"target/site/junit-frames\" />"          >> junit-reports-ant.xml
+        echo "<report format=\"noframes\" todir=\"target/site/junit-noframes\" />"      >> junit-reports-ant.xml
+        echo "</junitreport>" >> junit-reports-ant.xml
+        echo "</target>" >> junit-reports-ant.xml
+        echo "</project>" >> junit-reports-ant.xml
+
+    - shell: bash
+      run: |
+        ant -file junit-reports-ant.xml
