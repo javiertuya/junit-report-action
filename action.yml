@@ -49,6 +49,7 @@ runs:
         echo "</junitreport>" >> junit-reports-ant.xml
         echo "<replace file=\"${{ inputs.report-dir }}/junit-noframes/junit-noframes.html\" token=\"Unit Test Results\" value=\"${{ inputs.report-title }}\" />"  >> junit-reports-ant.xml
         echo "<replace file=\"${{ inputs.report-dir }}/junit-frames/index.html\"            token=\"Unit Test Results\" value=\"${{ inputs.report-title }}\" />"  >> junit-reports-ant.xml
+        echo "<replace file=\"${{ inputs.report-dir }}/junit-frames/overview-summary.html\" token=\"Unit Test Results\" value=\"${{ inputs.report-title }}\" />"  >> junit-reports-ant.xml
         echo "</target>" >> junit-reports-ant.xml
         echo "</project>" >> junit-reports-ant.xml
 
