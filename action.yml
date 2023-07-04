@@ -1,27 +1,54 @@
 # action.yml
-name: 'Junit reports action'
-description: 'Generates junit html style reports from surefire test results'
+name: 'Junit Report Action for Java and .NET'
+description: 'Generates junit html style reports from surefire test results and .NET .trx test results'
+author: "Javier Tuya"
+branding:
+  icon: file-text
+  color: blue
 inputs:
+  report-title:
+    description: 'The title of the test report'
+    required: false
+    default: 'Unit Test Results'
   surefire-files:
-    description: 'Specification of surefire files (can use * and  ** wildcards)'
+    description: 'Specification of the surefire test report files (can use * and  ** wildcards'
     required: false
     default: '**/target/surefire-reports/TEST-*.xml'
   report-dir:
-    description: 'Directory where the junit html reports will be generated'
+    description: 'Directory where the resulting junit html reports will be generated'
     required: false
     default: 'target/site'
+  net-trx-report:
+    description: 'Specifies the .Net test result file (`.trx`) that
+      will be splitted into a set of `TEST-*.xml` files in the folder `net-surefire-folder`.
+      The resulting files can be specified in the `surefire-files` parameter to generate the html report'
+    required: false
+    default: ''
+  net-surefire-folder:
+    description: 'Only if `net-trx-report` is specified: folder where the splitted test report files will be stored'
+    required: false
+    default: 'target/surefire-reports'
 runs:
   using: "composite"
   steps:
+    - if: ${{ inputs.net-trx-report != '' }}
+      shell: bash
+      run: |
+        dotnet tool install --global DotnetTestSplit
+        DotnetTestSplit ${{ inputs.net-trx-report }} ${{ inputs.net-surefire-folder }}
+        ls -la ${{ inputs.net-surefire-folder }}
+
     - shell: bash
       run: |
         echo "<project name=\"aggregate-junit-reports\" default=\"aggregate\" >"        > junit-reports-ant.xml
         echo "<target name=\"aggregate\" >"                                             >> junit-reports-ant.xml
         echo "<junitreport>"                                                            >> junit-reports-ant.xml
-        echo "<fileset dir=\".\"><include name=\"${{ inputs.surefire-files }}\" /></fileset>"      >> junit-reports-ant.xml
+        echo "<fileset dir=\".\"><include name=\"${{ inputs.surefire-files }}\" /></fileset>"        >> junit-reports-ant.xml
         echo "<report format=\"frames\" todir=\"${{ inputs.report-dir }}/junit-frames\" />"          >> junit-reports-ant.xml
         echo "<report format=\"noframes\" todir=\"${{ inputs.report-dir }}/junit-noframes\" />"      >> junit-reports-ant.xml
         echo "</junitreport>" >> junit-reports-ant.xml
+        echo "<replace file=\"${{ inputs.report-dir }}/junit-noframes/junit-noframes.html\" token=\"Unit Test Results\" value=\"${{ inputs.report-title }}\" />"  >> junit-reports-ant.xml
+        echo "<replace file=\"${{ inputs.report-dir }}/junit-frames/index.html\"            token=\"Unit Test Results\" value=\"${{ inputs.report-title }}\" />"  >> junit-reports-ant.xml
         echo "</target>" >> junit-reports-ant.xml
         echo "</project>" >> junit-reports-ant.xml
 
