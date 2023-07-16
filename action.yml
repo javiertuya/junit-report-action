@@ -19,9 +19,9 @@ inputs:
     required: false
     default: 'target/site'
   net-trx-report:
-    description: 'Specifies the .Net test result file (`.trx`) that
-      will be splitted into a set of `TEST-*.xml` files in the folder `net-surefire-folder`.
-      The resulting files can be specified in the `surefire-files` parameter to generate the html report'
+    description: 'Specifies one or more result files (`.trx`) that
+      will be splitted into a set of `TEST-*.xml` files in the folder `net-surefire-folder`
+      Multiple files are separated by comma'
     required: false
     default: ''
   net-surefire-folder:
@@ -35,7 +35,13 @@ runs:
       shell: bash
       run: |
         dotnet tool install --global DotnetTestSplit
-        DotnetTestSplit ${{ inputs.net-trx-report }} ${{ inputs.net-surefire-folder }}
+        # process each file if separated by comma
+        IFS=\, read -a fields <<<"${{ inputs.net-trx-report }}"
+        for TRX in "${fields[@]}" ;do
+          echo "--- Split file: $TRX"
+          DotnetTestSplit $TRX ${{ inputs.net-surefire-folder }}
+        done
+        echo "--- Splitted files at ${{ inputs.net-surefire-folder }}:"
         ls -la ${{ inputs.net-surefire-folder }}
 
     - shell: bash

@@ -9,9 +9,9 @@ Generates junit html style reports from surefire test results and .NET .trx test
 - `report-dir` *(Default `target/site`)*: Directory where the resulting junit html reports will be generated .
 
 On .NET you also need:
-- `net-trx-report`: Specifies the .Net test result file (`.trx`) that
+- `net-trx-report`: Specifies one or more result files (`.trx`) that
   will be splitted into a set of `TEST-*.xml` files in the folder `net-surefire-folder`.
-  The resulting files can be specified in the `surefire-files` parameter to generate the html report.
+  Multiple files are separated by comma.
 - `net-surefire-folder` *(Default `target/surefire-reports`)*: Only if `net-trx-report` is specified: 
   folder where the splitted test report files will be stored.
 
@@ -27,7 +27,7 @@ The html reports at the `report-dir` folder:
 
 On Java, this will generate the html the test report files from the test results produced by maven surefire:
 
-```
+```yaml
       - name: Junit html report
         uses: javiertuya/junit-report-action@main
         with:
@@ -35,14 +35,14 @@ On Java, this will generate the html the test report files from the test results
           report-dir: target/site/junit
 ```
 
-On .NET, this will take single `.trx` file with the results of the test, split it
+On .NET, this will take two `.trx` files with the results of the tests, split it
 into `reports/surefire-report` folder and generate the html test reports at `reports`:
 
-```
+```yaml
       - name: Junit html report
         uses: javiertuya/junit-report-action@main
         with:
-          net-trx-report: "MyProject/MyProjectTestResult.trx"
+          net-trx-report: "MyProject/MyProjectTestResult.trx,MyProject2/MyProject2TestResult.trx"
           net-surefire-folder: "reports/surefire-reports"
           surefire-files: "reports/surefire-reports/TEST-*.xml"
           report-dir: reports
