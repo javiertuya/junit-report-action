@@ -6,12 +6,16 @@ branding:
   icon: file-text
   color: blue
 inputs:
+  report-enabled:
+    description: 'Generate the JUnit test reports'
+    required: false
+    default: true
   report-title:
     description: 'The title of the test report'
     required: false
     default: 'Unit Test Results'
   surefire-files:
-    description: 'Specification of the surefire test report files (can use * and  ** wildcards'
+    description: 'Specification of the surefire test report files (can use * and  ** wildcards)'
     required: false
     default: '**/target/surefire-reports/TEST-*.xml'
   report-dir:
@@ -28,10 +32,26 @@ inputs:
     description: 'Only if `net-trx-report` is specified: folder where the splitted test report files will be stored'
     required: false
     default: 'target/surefire-reports'
+  diff-links-enabled:
+    description: 'Set to true to activate report reprocessing'
+    required: false
+    default: false
+  diff-links-prefix:
+    description: 'The path prefix to the diff file that you see in the report'
+    required: false
+    default: 'target/'
+  diff-links-reports:
+    description: 'A glob specification of all html junit report files'
+    required: false
+    default: 'target/site/junit-*/**/*.html'
+  diff-links-files:
+    description: 'A glob specification of all diff files'
+    required: false
+    default: '**/target/*.html'
 runs:
   using: "composite"
   steps:
-    - if: ${{ inputs.net-trx-report != '' }}
+    - if: ${{ inputs.report-enabled == 'true' && inputs.net-trx-report != ''}}
       shell: bash
       run: |
         dotnet tool install --global DotnetTestSplit
@@ -45,6 +65,7 @@ runs:
         ls -la ${{ inputs.net-surefire-folder }}
 
     - shell: bash
+      if: ${{ inputs.report-enabled == 'true'}}
       run: |
         echo "<project name=\"aggregate-junit-reports\" default=\"aggregate\" >"        > junit-reports-ant.xml
         echo "<target name=\"aggregate\" >"                                             >> junit-reports-ant.xml
@@ -60,5 +81,18 @@ runs:
         echo "</project>" >> junit-reports-ant.xml
 
     - shell: bash
+      if: ${{ inputs.report-enabled == 'true' }}
       run: |
         ant -file junit-reports-ant.xml
+
+    - name: Use Node.js
+      if: ${{ inputs.diff-links-enabled == 'true'}}
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x' 
+    - shell: bash
+      if: ${{ inputs.diff-links-enabled == 'true'}}
+      run: |
+        node --version && npm --version
+        cd ${{ github.action_path }} && npm install
+        cd ${{ github.action_path }} && npm start "${{ inputs.diff-links-prefix }}" "${{ github.workspace }}/${{ inputs.diff-links-reports }}" "${{ github.workspace }}/${{ inputs.diff-links-files }}"

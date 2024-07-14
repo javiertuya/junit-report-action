@@ -1,0 +1,14 @@
+{
+  "name": "reprocess-junit-html-reports",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.js",
+    "test": "mocha test/Test*.js"
+  },
+  "dependencies": {
+    "glob" : "11.0.0"
+  },
+  "devDependencies": {
+    "mocha": "10.6.0"
+  }
+}
