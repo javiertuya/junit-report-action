@@ -6,7 +6,7 @@
     "test": "mocha test/Test*.js"
   },
   "dependencies": {
-    "glob" : "13.0.0"
+    "glob" : "13.0.6"
   },
   "devDependencies": {
     "mocha": "11.7.5"
