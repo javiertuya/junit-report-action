@@ -89,7 +89,7 @@ runs:
       if: ${{ inputs.diff-links-enabled == 'true'}}
       uses: actions/setup-node@v6
       with:
-        node-version: '20.x' 
+        node-version: '24.x' 
     - shell: bash
       if: ${{ inputs.diff-links-enabled == 'true'}}
       run: |
