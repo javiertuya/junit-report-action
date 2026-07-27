@@ -95,7 +95,7 @@ runs:
 
     - name: Use Node.js
       if: ${{ inputs.diff-links-enabled == 'true'}}
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         node-version: ${{ steps.node-version.outputs.version }}
     - shell: bash
