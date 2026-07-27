@@ -21,9 +21,11 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '24.x' 
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
       - name: Run unit tests of report reprocessing
         run: |
           mkdir actual
-          npm install
+          npm ci
           npm test

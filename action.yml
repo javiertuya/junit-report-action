@@ -89,10 +89,12 @@ runs:
       if: ${{ inputs.diff-links-enabled == 'true'}}
       uses: actions/setup-node@v6
       with:
-        node-version: '24.x' 
+        node-version-file: ${{ github.action_path }}/.nvmrc
+        cache: 'npm'
+        cache-dependency-path: ${{ github.action_path }}/package-lock.json
     - shell: bash
       if: ${{ inputs.diff-links-enabled == 'true'}}
       run: |
         node --version && npm --version
-        cd ${{ github.action_path }} && npm install
+        cd ${{ github.action_path }} && npm ci --omit=dev
         cd ${{ github.action_path }} && npm start "${{ inputs.diff-links-prefix }}" "${{ github.workspace }}/${{ inputs.diff-links-reports }}" "${{ github.workspace }}/${{ inputs.diff-links-files }}"
