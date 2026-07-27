@@ -85,13 +85,19 @@ runs:
       run: |
         ant -file junit-reports-ant.xml
 
+    # setup-node resolves node-version-file against the consumer workspace, not the action path,
+    # so the version is read here to keep .nvmrc as the single source of truth
+    - name: Read Node version
+      id: node-version
+      if: ${{ inputs.diff-links-enabled == 'true'}}
+      shell: bash
+      run: echo "version=$(cat ${{ github.action_path }}/.nvmrc)" >> $GITHUB_OUTPUT
+
     - name: Use Node.js
       if: ${{ inputs.diff-links-enabled == 'true'}}
       uses: actions/setup-node@v6
       with:
-        node-version-file: ${{ github.action_path }}/.nvmrc
-        cache: 'npm'
-        cache-dependency-path: ${{ github.action_path }}/package-lock.json
+        node-version: ${{ steps.node-version.outputs.version }}
     - shell: bash
       if: ${{ inputs.diff-links-enabled == 'true'}}
       run: |
