@@ -10,7 +10,7 @@
     "node": ">=24"
   },
   "dependencies": {
-    "glob" : "13.0.6"
+    "glob" : "14.0.3"
   },
   "devDependencies": {
     "mocha": "12.0.2"
